@@ -5,29 +5,37 @@
       <stop offset="1" stop-color="#191C21"/>
     </linearGradient>
     <linearGradient id="head" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#D9DCE1"/>
-      <stop offset="0.3" stop-color="#FFFFFF"/>
-      <stop offset="0.7" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#D9DCE1"/>
+      <stop offset="0" stop-color="#C9CDD3"/>
+      <stop offset="0.22" stop-color="#F7F8F9"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="0.78" stop-color="#F7F8F9"/>
+      <stop offset="1" stop-color="#C9CDD3"/>
     </linearGradient>
-    <linearGradient id="visor" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6DB6F0"/>
-      <stop offset="1" stop-color="#2F8EDB"/>
+    <linearGradient id="crown" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8CCBF7"/>
+      <stop offset="1" stop-color="#3D97DE"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D5DCE4"/>
+      <stop offset="0.25" stop-color="#FFFFFF"/>
+      <stop offset="0.75" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#D5DCE4"/>
     </linearGradient>
   </defs>
   <rect width="128" height="128" fill="url(#bg)"/>
-  <!-- head: Roblox's rounded cylinder -->
-  <rect x="30" y="30" width="68" height="76" rx="24" fill="url(#head)"/>
-  <!-- visor band and brim -->
-  <path d="M30 52 V46 Q30 30 50 30 H78 Q98 30 98 46 V52 Z" fill="url(#visor)"/>
-  <rect x="40" y="36" width="48" height="9" rx="4.5" fill="#FFFFFF" opacity="0.9"/>
-  <path d="M24 50 Q64 44 104 50 Q104 58 96 58 Q64 53 32 58 Q24 58 24 50 Z" fill="#1F78C4"/>
-  <!-- shades -->
-  <path d="M34 64 H60 Q61 64 61 66 V70 Q61 79 52 79 H42 Q34 79 34 71 Z" fill="#111317"/>
-  <path d="M94 64 H68 Q67 64 67 66 V70 Q67 79 76 79 H86 Q94 79 94 71 Z" fill="#111317"/>
-  <rect x="58" y="64" width="12" height="4" rx="2" fill="#111317"/>
-  <path d="M39 68 L47 68" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M72 68 L80 68" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- head: the classic wide cylinder, shaded at the sides -->
+  <rect x="20" y="36" width="88" height="74" rx="22" fill="url(#head)"/>
+  <!-- cap: light blue crown, white band with the lettering -->
+  <path d="M24 44 C24 24 40 16 64 16 C88 16 104 24 104 44 Z" fill="url(#crown)"/>
+  <path d="M40 22 C48 19 56 18 64 18" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="3" stroke-linecap="round"/>
+  <rect x="21" y="38" width="86" height="15" rx="5" fill="url(#band)"/>
+  <text x="64" y="49.5" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="11" letter-spacing="1.2" fill="#2F86D0">ROBLOX</text>
+  <!-- shades: flat top, rounded lenses, joined by a bridge -->
+  <path d="M27 60 H61 V66 Q61 78 50 78 H38 Q27 78 27 67 Z" fill="#0E1013"/>
+  <path d="M101 60 H67 V66 Q67 78 78 78 H90 Q101 78 101 67 Z" fill="#0E1013"/>
+  <rect x="25" y="59" width="78" height="5" rx="1.5" fill="#0E1013"/>
+  <path d="M33 66 L42 66" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M73 66 L82 66" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="2.5" stroke-linecap="round"/>
   <!-- smile -->
-  <path d="M51 88 Q64 98 77 88" fill="none" stroke="#111317" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M53 91 Q64 99 75 91" fill="none" stroke="#0E1013" stroke-width="3" stroke-linecap="round"/>
 </svg>
