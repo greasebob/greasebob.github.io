@@ -191,8 +191,10 @@
     border: 1px solid var(--hairline);
     box-shadow: inset 0 1px 2px var(--shadow-inner);
   }
-  .logo img { width: 36px; height: 36px; image-rendering: auto; }
-  .logo svg { width: 30px; height: 30px; }
+  /* An app icon is its own tile: no well around it. */
+  .logo.app { background: none; border: 0; box-shadow: none; }
+  .logo img { width: 48px; height: 48px; filter: drop-shadow(0 1px 1px var(--shadow-contact)); }
+  .logo svg { width: 48px; height: 48px; filter: drop-shadow(0 1px 1px var(--shadow-contact)); }
   h2 { margin: 0; font-size: 14px; font-weight: 600; }
   .sub { margin: 0; color: var(--ink-2); font-size: 12px; }
   .about { margin: 0; }
@@ -260,7 +262,7 @@
   <div class="grid">
     <section class="card" id="quartzmidi" aria-labelledby="q-name">
       <div class="head">
-        <div class="logo"><img src="quartzmidi.png" alt="" width="36" height="36"></div>
+        <div class="logo app"><img src="quartzmidi.png" alt="" width="48" height="48"></div>
         <div>
           <h2 id="q-name">QuartzMIDI</h2>
           <p class="sub">Windows 10 and 11</p>
@@ -283,7 +285,7 @@
 
     <section class="card" id="p2piano" aria-labelledby="p-name">
       <div class="head">
-        <div class="logo"><svg viewBox="8 5 48 52" aria-hidden="true"><g fill="#f2b84b"><rect x="12" y="26" width="12" height="28" rx="3"/><rect x="40" y="26" width="12" height="28" rx="3"/></g><path d="M15 21C22 9 42 9 49 21C42 14 22 14 15 21Z" fill="#f2b84b" stroke="#f2b84b" stroke-width="2.5" stroke-linejoin="round"/></svg></div>
+        <div class="logo app"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="p2g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6C662"/><stop offset="1" stop-color="#D8902A"/></linearGradient></defs><rect width="48" height="48" rx="9" fill="url(#p2g)"/><rect x="9" y="11" width="30" height="26" rx="3.5" fill="#FFFFFF"/><path d="M19 11v26M29 11v26" stroke="#D8902A" stroke-width="1.5"/><rect x="16" y="11" width="6" height="15" rx="1.5" fill="#2A2118"/><rect x="26" y="11" width="6" height="15" rx="1.5" fill="#2A2118"/></svg></div>
         <div>
           <h2 id="p-name">P2Piano</h2>
           <p class="sub">In the browser</p>
