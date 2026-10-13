@@ -1,0 +1,5 @@
+Piano samples: Salamander Grand Piano by Alexander Holm, CC BY 3.0
+(https://creativecommons.org/licenses/by/3.0/), SF2 by FreePats
+(https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html).
+Cut from P2Piano's bank: one velocity layer (v10), every sampled note from A0 to C8,
+trimmed to 3 seconds with a fade and encoded as MP3.
