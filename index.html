@@ -133,6 +133,10 @@
   }
   .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
   .brand img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--hairline); }
+  .links { display: flex; gap: 8px; }
+  /* Brand marks are filled; Discord keeps its blurple, as in the app's About. */
+  svg.i.mark { fill: currentColor; stroke: none; }
+  .btn .i.discord { color: #5865F2; }
 
   /* Buttons: elevated with a hairline, radius 10, 32 tall; primary is solid accent. */
   .btn {
@@ -217,21 +221,6 @@
   .pills .i { width: 14px; height: 14px; color: var(--ink-2); }
 
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
-
-  /* Status bar: 28 dp, structure, hairline above. */
-  footer {
-    min-height: 28px;
-    padding: 4px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    background: var(--structure);
-    border-top: 1px solid var(--hairline);
-    color: var(--ink-2);
-    font-size: 12px;
-  }
-  footer a:hover { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -248,12 +237,18 @@
   <symbol id="users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
   <symbol id="link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
   <symbol id="message-square" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
-  <symbol id="monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol>
+  <symbol id="keyboard" viewBox="0 0 24 24"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></symbol>
+  <symbol id="discord" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></symbol>
+  <symbol id="roblox" viewBox="0 0 24 24"><path d="M18.926 23.998 0 18.892 5.075.002 24 5.108ZM15.348 10.09l-5.282-1.453-1.414 5.273 5.282 1.453z"/></symbol>
 </svg>
 
 <header class="strip">
   <a class="brand" href="https://github.com/greasebob"><img src="avatar-96.png" alt="" width="28" height="28">BobGrease</a>
-  <a class="btn icon" href="https://github.com/greasebob" aria-label="GitHub" title="GitHub"><svg class="i"><use href="#github"/></svg></a>
+  <nav class="links">
+    <a class="btn icon" href="https://github.com/greasebob" aria-label="GitHub" title="GitHub"><svg class="i"><use href="#github"/></svg></a>
+    <a class="btn icon" href="https://discord.com/users/340623853816512515" aria-label="Discord" title="Discord"><svg class="i mark discord"><use href="#discord"/></svg></a>
+    <a class="btn icon" href="https://www.roblox.com/users/373453735/profile" aria-label="Roblox" title="Roblox"><svg class="i mark"><use href="#roblox"/></svg></a>
+  </nav>
 </header>
 
 <main>
@@ -295,9 +290,9 @@
       <p class="about">An online piano room to play together from a link, with velocity and triple pedals.</p>
       <ul class="pills">
         <li><svg class="i"><use href="#users"/></svg>Play together</li>
-        <li><svg class="i"><use href="#link"/></svg>Room from a link</li>
+        <li><svg class="i"><use href="#link"/></svg>Room links</li>
         <li><svg class="i"><use href="#keyboard-music"/></svg>MIDI keyboard</li>
-        <li><svg class="i"><use href="#monitor"/></svg>Roblox layout</li>
+        <li><svg class="i"><use href="#keyboard"/></svg>Roblox key layout</li>
         <li><svg class="i"><use href="#gauge"/></svg>Velocity</li>
         <li><svg class="i"><use href="#message-square"/></svg>Chat</li>
       </ul>
@@ -308,10 +303,5 @@
     </section>
   </div>
 </main>
-
-<footer>
-  <span>By BobGrease</span>
-  <span>Discord: BobGrease</span>
-</footer>
 </body>
 </html>
