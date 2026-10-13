@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuartzMIDI and P2Piano: Roblox piano auto player and online piano</title>
+<meta name="description" content="Free piano tools by BobGrease. QuartzMIDI is a Roblox piano auto player that plays MIDI files and your MIDI keyboard on any game piano. P2Piano is an online piano room to play together from a link.">
+<link rel="canonical" href="https://greasebob.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://greasebob.github.io/">
+<meta property="og:title" content="QuartzMIDI and P2Piano">
+<meta property="og:description" content="A Roblox piano auto player for Windows, and an online piano room to play together from a link.">
+<meta property="og:image" content="https://greasebob.github.io/quartzmidi.png">
+<meta name="theme-color" content="#EBEEF2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#20242A" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" href="quartzmidi.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "QuartzMIDI",
+    "description": "Roblox piano auto player: plays MIDI files and your MIDI keyboard on any game piano, with velocity and 88 keys.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Windows 10, Windows 11",
+    "url": "https://github.com/greasebob/QuartzMIDI",
+    "downloadUrl": "https://github.com/greasebob/QuartzMIDI/releases/latest",
+    "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "BobGrease", "url": "https://github.com/greasebob" }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "P2Piano",
+    "description": "An online piano room to play together from a link, with real velocity and pedals.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires a modern browser",
+    "url": "https://greasebob.github.io/p2piano/",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "BobGrease", "url": "https://github.com/greasebob" }
+  }
+]
+</script>
+<style>
+  /* QuartzMIDI's Blue theme (engine/Skin.hpp): light by default, Blue Dark for a dark system. */
+  :root {
+    --canvas: #E0E4E9;
+    --structure: #EBEEF2;
+    --card: #F5F7F9;
+    --elevated: #FAFBFC;
+    --elevated-hot: #F0F3F6;
+    --recessed: #E3E7EC;
+    --ink: #1B1E24;
+    --ink-2: #5B636F;
+    --ink-3: #8B929E;
+    --accent: #0B6EC4;
+    --accent-hot: #2A80CB;
+    --accent-down: #0A63B0;
+    --on-accent: #FFFFFF;
+    --accent-soft: #0B6EC41A;
+    --accent-line: #0B6EC459;
+    --ok: #1A7F45;
+    --ok-ink: #12652F;
+    --ok-soft: #1A7F451F;
+    --ok-border: #1A7F4557;
+    --hairline: #11161F17;
+    --strong: #11161F29;
+    --top-highlight: #FFFFFFD9;
+    --shadow-contact: #11161F0D;
+    --shadow-ambient: #11161F0A;
+    --shadow-inner: #11161F17;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --canvas: #191C21;
+      --structure: #20242A;
+      --card: #272B31;
+      --elevated: #2E333A;
+      --elevated-hot: #363C44;
+      --recessed: #14171B;
+      --ink: #E7E9EC;
+      --ink-2: #A3AAB5;
+      --ink-3: #79818D;
+      --accent: #4EA3EA;
+      --accent-hot: #60ACEC;
+      --accent-down: #4693D3;
+      --on-accent: #101218;
+      --accent-soft: #4EA3EA24;
+      --accent-line: #4EA3EA66;
+      --ok: #4FB277;
+      --ok-ink: #8FDCAA;
+      --ok-soft: #4FB27729;
+      --ok-border: #4FB27766;
+      --hairline: #FFFFFF14;
+      --strong: #FFFFFF24;
+      --top-highlight: #FFFFFF0F;
+      --shadow-contact: #0000004D;
+      --shadow-ambient: #00000038;
+      --shadow-inner: #00000073;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--canvas);
+    color: var(--ink);
+    font: 400 14px/1.5 "IBM Plex Sans", system-ui, sans-serif;
+  }
+  a { color: inherit; text-decoration: none; }
+  svg.i { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Top strip: 56 dp, structure, one hairline below. */
+  .strip {
+    height: 56px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--structure);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .brand { font-weight: 600; font-size: 14px; }
+
+  /* Buttons: elevated with a hairline, radius 10, 32 tall; primary is solid accent. */
+  .btn {
+    height: 32px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--hairline);
+    background: var(--elevated);
+    color: var(--ink);
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 1px 1px var(--shadow-contact), inset 0 1px 0 var(--top-highlight);
+  }
+  .btn:hover { background: var(--elevated-hot); }
+  .btn:active { background: var(--recessed); box-shadow: inset 0 1px 2px var(--shadow-inner); }
+  .btn .i { color: var(--ink-2); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); box-shadow: 0 1px 1px var(--shadow-contact); }
+  .btn.primary .i { color: var(--on-accent); }
+  .btn.primary:hover { background: var(--accent-hot); border-color: var(--accent-hot); }
+  .btn.primary:active { background: var(--accent-down); border-color: var(--accent-down); }
+  .btn.icon { width: 32px; padding: 0; justify-content: center; }
+  .btn:focus-visible { outline: 2px solid var(--accent-line); outline-offset: 2px; }
+
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 16px 48px;
+  }
+  h1 { margin: 0 0 4px; font-size: 20px; font-weight: 600; line-height: 1.3; }
+  .lede { margin: 0 0 24px; color: var(--ink-2); }
+
+  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } }
+
+  /* Cards: card fill, hairline, radius 12, ambient and contact shadows, top highlight. */
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    box-shadow: 0 2px 6px var(--shadow-ambient), 0 1px 1px var(--shadow-contact), inset 0 1px 0 var(--top-highlight);
+  }
+  .head { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 48px; height: 48px; flex: none;
+    display: grid; place-items: center;
+    border-radius: 10px;
+    background: var(--recessed);
+    border: 1px solid var(--hairline);
+    box-shadow: inset 0 1px 2px var(--shadow-inner);
+  }
+  .logo img { width: 36px; height: 36px; image-rendering: auto; }
+  .logo svg { width: 30px; height: 30px; }
+  h2 { margin: 0; font-size: 14px; font-weight: 600; }
+  .sub { margin: 0; color: var(--ink-2); font-size: 12px; }
+  .about { margin: 0; }
+
+  /* Feature pills: raised, control radius, 8 dp side padding. */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .pills li {
+    height: 28px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 10px;
+    background: var(--elevated);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 1px 1px var(--shadow-contact), 0 2px 6px var(--shadow-ambient), inset 0 1px 0 var(--top-highlight);
+    font-size: 12px;
+  }
+  .pills .i { width: 14px; height: 14px; color: var(--ink-2); }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+
+  /* Status bar: 28 dp, structure, hairline above. */
+  footer {
+    min-height: 28px;
+    padding: 4px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--structure);
+    border-top: 1px solid var(--hairline);
+    color: var(--ink-2);
+    font-size: 12px;
+  }
+  footer a:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></symbol>
+  <symbol id="github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+  <symbol id="external-link" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+  <symbol id="piano" viewBox="0 0 24 24"><path d="M18.5 8c-1.4 0-2.6-.8-3.2-2A6.87 6.87 0 0 0 2 9v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-8.5C22 9.6 20.4 8 18.5 8"/><path d="M2 14h20"/><path d="M6 14v4"/><path d="M10 14v4"/><path d="M14 14v4"/><path d="M18 14v4"/></symbol>
+  <symbol id="gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+  <symbol id="keyboard-music" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h4"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M2 12h20"/><path d="M6 12v4"/><path d="M10 12v4"/><path d="M14 12v4"/><path d="M18 12v4"/></symbol>
+  <symbol id="library" viewBox="0 0 24 24"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></symbol>
+  <symbol id="file-music" viewBox="0 0 24 24"><path d="M10.5 22H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v8.4"/><path d="M8 18v-7.7L16 9v7"/><circle cx="14" cy="16" r="2"/><circle cx="6" cy="18" r="2"/></symbol>
+  <symbol id="audio-waveform" viewBox="0 0 24 24"><path d="M2 13a2 2 0 0 0 2-2V7a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0V4a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0v-4a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="message-square" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol>
+</svg>
+
+<header class="strip">
+  <span class="brand">BobGrease</span>
+  <a class="btn icon" href="https://github.com/greasebob" aria-label="GitHub" title="GitHub"><svg class="i"><use href="#github"/></svg></a>
+</header>
+
+<main>
+  <h1>Piano tools for Roblox and beyond</h1>
+  <p class="lede">Free and open source.</p>
+
+  <div class="grid">
+    <section class="card" id="quartzmidi" aria-labelledby="q-name">
+      <div class="head">
+        <div class="logo"><img src="quartzmidi.png" alt="" width="36" height="36"></div>
+        <div>
+          <h2 id="q-name">QuartzMIDI</h2>
+          <p class="sub">Windows 10 and 11</p>
+        </div>
+      </div>
+      <p class="about">A Roblox piano auto player: plays MIDI files and your MIDI keyboard on any game piano.</p>
+      <ul class="pills">
+        <li><svg class="i"><use href="#piano"/></svg>88 keys</li>
+        <li><svg class="i"><use href="#gauge"/></svg>Velocity</li>
+        <li><svg class="i"><use href="#keyboard-music"/></svg>MIDI keyboard</li>
+        <li><svg class="i"><use href="#library"/></svg>Library</li>
+        <li><svg class="i"><use href="#file-music"/></svg>Sheets</li>
+        <li><svg class="i"><use href="#audio-waveform"/></svg>Audio to MIDI</li>
+      </ul>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/greasebob/QuartzMIDI/releases/latest/download/QuartzMIDI.zip"><svg class="i"><use href="#download"/></svg>Download</a>
+        <a class="btn" href="https://github.com/greasebob/QuartzMIDI"><svg class="i"><use href="#github"/></svg>GitHub</a>
+      </div>
+    </section>
+
+    <section class="card" id="p2piano" aria-labelledby="p-name">
+      <div class="head">
+        <div class="logo"><svg viewBox="8 5 48 52" aria-hidden="true"><g fill="#f2b84b"><rect x="12" y="26" width="12" height="28" rx="3"/><rect x="40" y="26" width="12" height="28" rx="3"/></g><path d="M15 21C22 9 42 9 49 21C42 14 22 14 15 21Z" fill="#f2b84b" stroke="#f2b84b" stroke-width="2.5" stroke-linejoin="round"/></svg></div>
+        <div>
+          <h2 id="p-name">P2Piano</h2>
+          <p class="sub">In the browser</p>
+        </div>
+      </div>
+      <p class="about">An online piano room: play together from a link, with real velocity and pedals.</p>
+      <ul class="pills">
+        <li><svg class="i"><use href="#users"/></svg>Play together</li>
+        <li><svg class="i"><use href="#link"/></svg>Room from a link</li>
+        <li><svg class="i"><use href="#keyboard-music"/></svg>MIDI keyboard</li>
+        <li><svg class="i"><use href="#monitor"/></svg>Roblox layout</li>
+        <li><svg class="i"><use href="#gauge"/></svg>Velocity</li>
+        <li><svg class="i"><use href="#message-square"/></svg>Chat</li>
+      </ul>
+      <div class="actions">
+        <a class="btn primary" href="https://greasebob.github.io/p2piano/"><svg class="i"><use href="#external-link"/></svg>Open</a>
+        <a class="btn" href="https://github.com/greasebob/p2piano"><svg class="i"><use href="#github"/></svg>GitHub</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <span>By BobGrease</span>
+  <span>Discord: BobGrease</span>
+</footer>
+</body>
+</html>
