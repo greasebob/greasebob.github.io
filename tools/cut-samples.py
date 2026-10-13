@@ -1,15 +1,17 @@
-"""Cut a small sample set for the home page from P2Piano's Salamander SF3.
+"""Cut the home page's samples from P2Piano's Salamander SF3.
 
-One velocity layer (v10, 73-88), every sampled root from C2 to C7, left and right
-Ogg streams joined to stereo, 3 s long with a fade, as MP3 named by MIDI note.
+Four velocity layers, so a soft note has the soft hammer's mellow tone and not only less volume:
+v4 for velocities 1-48, v8 49-72, v12 73-100 and v16 101-127 (the bank's own ranges, merged in pairs).
+Every sampled root from A0 to C8 (a minor third apart), left and right Ogg streams joined to stereo,
+4 s long with a fade, as MP3 at LAME's V4, in notes/<layer>/<midi note>.mp3.
+
+python cut-samples.py <sf3> <site>/notes <ffmpeg>
 """
 import os, struct, subprocess, sys, tempfile
 
-src, out = sys.argv[1], sys.argv[2]
-LAYER = 'v10'
+src, out, FFMPEG = sys.argv[1], sys.argv[2], sys.argv[3]
+LAYERS = ['v4', 'v8', 'v12', 'v16']
 LO, HI = 21, 108
-FFMPEG = sys.argv[3]
-os.makedirs(out, exist_ok=True)
 data = open(src, 'rb').read()
 
 
@@ -35,20 +37,25 @@ for i in range(0, ssize - 46, 46):
     start, end, _, _, rate, pitch, corr, link, stype = struct.unpack('<IIIIIBbHH', r[20:46])
     by_name[name] = (start, end, pitch, corr)
 
-roots = sorted({v[2] for k, v in by_name.items() if k.endswith(f'{LAYER}_L')})
-roots = [r for r in roots if LO - 2 <= r <= HI + 2]
 tmp = tempfile.mkdtemp()
-for root in roots:
-    name = next(k[:-2] for k, v in by_name.items() if k.endswith(f'{LAYER}_L') and v[2] == root)
-    files = []
-    for side in 'LR':
-        start, end, pitch, corr = by_name[f'{name}_{side}']
-        assert corr == 0, (name, corr)
-        p = os.path.join(tmp, f'{root}{side}.ogg')
-        open(p, 'wb').write(data[smpl0 + start:smpl0 + end])
-        files.append(p)
-    dst = os.path.join(out, f'{root}.mp3')
-    subprocess.run([FFMPEG, '-v', 'error', '-y', '-i', files[0], '-i', files[1],
-                    '-filter_complex', '[0:a][1:a]join=inputs=2:channel_layout=stereo,atrim=0:3,afade=t=out:st=2.2:d=0.8',
-                    '-c:a', 'libmp3lame', '-q:a', '7', dst], check=True)
-    print(root, name, os.path.getsize(dst))
+total = 0
+for layer in LAYERS:
+    os.makedirs(os.path.join(out, layer), exist_ok=True)
+    roots = sorted({v[2] for k, v in by_name.items() if k.endswith(f'{layer}_L')})
+    roots = [r for r in roots if LO - 2 <= r <= HI + 2]
+    for root in roots:
+        name = next(k[:-2] for k, v in by_name.items() if k.endswith(f'{layer}_L') and v[2] == root)
+        files = []
+        for side in 'LR':
+            start, end, pitch, corr = by_name[f'{name}_{side}']
+            assert corr == 0, (name, corr)
+            p = os.path.join(tmp, f'{layer}{root}{side}.ogg')
+            open(p, 'wb').write(data[smpl0 + start:smpl0 + end])
+            files.append(p)
+        dst = os.path.join(out, layer, f'{root}.mp3')
+        subprocess.run([FFMPEG, '-v', 'error', '-y', '-i', files[0], '-i', files[1],
+                        '-filter_complex', '[0:a][1:a]join=inputs=2:channel_layout=stereo,atrim=0:4,afade=t=out:st=3:d=1',
+                        '-c:a', 'libmp3lame', '-q:a', '4', dst], check=True)
+        total += os.path.getsize(dst)
+    print(layer, len(roots), 'roots')
+print(round(total / 1e6, 2), 'MB')

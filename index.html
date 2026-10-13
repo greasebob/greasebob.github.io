@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuartzMIDI and P2Piano: Roblox piano auto player and online piano</title>
-<meta name="description" content="Free piano tools by BobGrease. QuartzMIDI is a Roblox piano auto player that plays MIDI files and your MIDI keyboard on any game piano. P2Piano is an online piano room to play together from a link.">
+<title>QuartzMIDI and P2Piano: MIDI app for Roblox pianos and online piano</title>
+<meta name="description" content="Free piano tools by BobGrease. QuartzMIDI is a MIDI app for Roblox pianos that plays your MIDI keyboard on any game piano, with a sheet editor, audio to MIDI and a song library. P2Piano is an online piano room to play together from a link.">
 <link rel="canonical" href="https://greasebob.github.io/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://greasebob.github.io/">
 <meta property="og:title" content="QuartzMIDI and P2Piano">
-<meta property="og:description" content="A Roblox piano auto player for Windows, and an online piano room to play together from a link.">
+<meta property="og:description" content="A MIDI app for Roblox pianos on Windows, and an online piano room to play together from a link.">
 <meta property="og:image" content="https://greasebob.github.io/quartzmidi.png">
 <meta name="theme-color" content="#EBEEF2" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#20242A" media="(prefers-color-scheme: dark)">
@@ -23,7 +23,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "QuartzMIDI",
-    "description": "Roblox piano auto player: plays MIDI files and your MIDI keyboard on any game piano, with velocity and 88 keys.",
+    "description": "MIDI app for Roblox pianos that plays your MIDI keyboard on any game piano, with a sheet editor, audio to MIDI and a song library, velocity and 88 keys.",
     "applicationCategory": "MultimediaApplication",
     "operatingSystem": "Windows 10, Windows 11",
     "url": "https://github.com/greasebob/QuartzMIDI",
@@ -82,6 +82,7 @@
     --key-black-edge: #0B0D10;
     --key-black-label: #A3AAB5;
     --key-shadow: #11161F14;
+    --key-black-lit-ink: #FFFFFF;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
@@ -119,6 +120,7 @@
       --key-black-edge: #FFFFFF3D;
       --key-black-label: #A3AAB5;
       --key-shadow: #00000059;
+      --key-black-lit-ink: #101218;
       color-scheme: dark;
     }
   }
@@ -181,6 +183,11 @@
   .btn.primary:hover { background: var(--accent-hot); border-color: var(--accent-hot); }
   .btn.primary:active { background: var(--accent-down); border-color: var(--accent-down); }
   .btn.icon { width: 32px; padding: 0; justify-content: center; }
+  /* the sound button while the browser holds the page's sound back, until the first click or key */
+  .btn.wake { border-color: var(--accent); background: var(--accent-soft); animation: wake 1.6s ease-in-out infinite; }
+  .btn.wake .i { color: var(--accent); }
+  @keyframes wake { 0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); } 50% { box-shadow: 0 0 0 6px var(--accent-soft); } }
+  @media (prefers-reduced-motion: reduce) { .btn.wake { animation: none; } }
   button.btn { font: inherit; cursor: pointer; }
   .btn:focus-visible { outline: 2px solid var(--accent-line); outline-offset: 2px; }
 
@@ -270,6 +277,8 @@
   <symbol id="discord" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></symbol>
   <symbol id="roblox" viewBox="0 0 24 24"><path d="M18.926 23.998 0 18.892 5.075.002 24 5.108ZM15.348 10.09l-5.282-1.453-1.414 5.273 5.282 1.453z"/></symbol>
   <symbol id="volume-2" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></symbol>
+  <symbol id="play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+  <symbol id="pause" viewBox="0 0 24 24"><rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/></symbol>
   <symbol id="volume-x" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></symbol>
 </svg>
 <canvas id="keys" aria-hidden="true"></canvas>
@@ -277,6 +286,7 @@
 <header class="strip">
   <a class="brand" href="https://github.com/greasebob"><img src="avatar-96.png" alt="" width="28" height="28">BobGrease</a>
   <nav class="links">
+    <button class="btn icon" id="autoplay" type="button" aria-label="Play" title="Play" aria-pressed="false"><svg class="i"><use href="#play"/></svg></button>
     <button class="btn icon" id="sound" type="button" aria-label="Sound" title="Sound" aria-pressed="true"><svg class="i"><use href="#volume-2"/></svg></button>
     <a class="btn icon" href="https://github.com/greasebob" aria-label="GitHub" title="GitHub"><svg class="i"><use href="#github"/></svg></a>
     <a class="btn icon" href="https://discord.com/users/340623853816512515" aria-label="Discord" title="Discord"><svg class="i mark discord"><use href="#discord"/></svg></a>
@@ -297,14 +307,14 @@
           <p class="sub">Windows 10 and 11</p>
         </div>
       </div>
-      <p class="about">A Roblox piano auto player: plays MIDI files and your MIDI keyboard on any game piano.</p>
+      <p class="about">A MIDI app for Roblox pianos that plays your MIDI keyboard on any game piano, with a sheet editor, audio to MIDI and a song library.</p>
       <ul class="pills">
-        <li><svg class="i"><use href="#piano"/></svg>88 keys</li>
-        <li><svg class="i"><use href="#gauge"/></svg>Velocity</li>
         <li><svg class="i"><use href="#keyboard-music"/></svg>MIDI keyboard</li>
-        <li><svg class="i"><use href="#library"/></svg>Library</li>
-        <li><svg class="i"><use href="#file-music"/></svg>Sheets</li>
+        <li><svg class="i"><use href="#file-music"/></svg>Sheet editor</li>
         <li><svg class="i"><use href="#audio-waveform"/></svg>Audio to MIDI</li>
+        <li><svg class="i"><use href="#library"/></svg>Library</li>
+        <li><svg class="i"><use href="#gauge"/></svg>Velocity</li>
+        <li><svg class="i"><use href="#piano"/></svg>88 keys</li>
       </ul>
       <div class="actions">
         <a class="btn primary" href="https://github.com/greasebob/QuartzMIDI/releases/latest/download/QuartzMIDI.zip"><svg class="i"><use href="#download"/></svg>Download</a>
