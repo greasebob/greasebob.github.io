@@ -422,8 +422,8 @@
       if (k.flash > 0) { // lit: nearly solid accent with a glow, even on a far key
         const a = ctx.globalAlpha;
         ctx.globalAlpha = Math.min(1, a + 0.4) * k.flash * 0.9;
-        // white keys light blue and black keys violet at first, both drifting round the colour wheel once in 3 minutes
-        const shift = (performance.now() / 1000) * 2;
+        // white keys light blue and black keys violet at first, both drifting round the colour wheel once in 5 minutes
+        const shift = (performance.now() / 1000) * 1.2;
         const lit = dark.matches
           ? (k.black ? `hsl(${258 + shift}, 80%, 75%)` : `hsl(${207 + shift}, 79%, 61%)`)
           : (k.black ? `hsl(${259 + shift}, 63%, 57%)` : `hsl(${208 + shift}, 89%, 41%)`);
