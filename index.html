@@ -184,35 +184,39 @@
   button.btn { font: inherit; cursor: pointer; }
   .btn:focus-visible { outline: 2px solid var(--accent-line); outline-offset: 2px; }
 
+  /* The two apps sit in the middle of the window, the keys falling around them. */
   main {
     flex: 1;
     width: 100%;
-    max-width: 960px;
+    max-width: 1080px;
     margin: 0 auto;
-    padding: 40px 16px 48px;
+    padding: 32px 16px 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-  h1 { margin: 0 0 4px; font-size: 20px; font-weight: 600; line-height: 1.3; }
-  .lede { margin: 0 0 24px; color: var(--ink-2); }
+  h1 { margin: 0 0 4px; font-size: 26px; font-weight: 600; line-height: 1.3; }
+  .lede { margin: 0 0 24px; color: var(--ink-2); font-size: 15px; }
   /* A halo of the page colour keeps the heading readable over a passing key. */
   h1, .lede { width: fit-content; text-shadow: 0 0 3px var(--canvas), 0 0 6px var(--canvas), 0 0 10px var(--canvas); }
 
-  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
   @media (min-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } }
 
-  /* Cards: card fill, hairline, radius 12, ambient and contact shadows, top highlight. */
+  /* Cards: card fill, hairline, radius 12, a deep shadow that lifts them off the keys, top highlight. */
   .card {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 16px;
+    gap: 20px;
+    padding: 24px;
     background: var(--card);
     border: 1px solid var(--hairline);
     border-radius: 12px;
-    box-shadow: 0 2px 6px var(--shadow-ambient), 0 1px 1px var(--shadow-contact), inset 0 1px 0 var(--top-highlight);
+    box-shadow: 0 16px 40px var(--shadow-contact), 0 2px 6px var(--shadow-ambient), 0 1px 1px var(--shadow-contact), inset 0 1px 0 var(--top-highlight);
   }
-  .head { display: flex; align-items: center; gap: 12px; }
+  .head { display: flex; align-items: center; gap: 16px; }
   .logo {
-    width: 48px; height: 48px; flex: none;
+    width: 64px; height: 64px; flex: none;
     display: grid; place-items: center;
     border-radius: 10px;
     background: var(--recessed);
@@ -221,17 +225,17 @@
   }
   /* An app icon is its own tile: no well around it. */
   .logo.app { background: none; border: 0; box-shadow: none; }
-  .logo img { width: 48px; height: 48px; filter: drop-shadow(0 1px 1px var(--shadow-contact)); }
-  .logo svg { width: 48px; height: 48px; filter: drop-shadow(0 1px 1px var(--shadow-contact)); }
-  h2 { margin: 0; font-size: 14px; font-weight: 600; }
-  .sub { margin: 0; color: var(--ink-2); font-size: 12px; }
-  .about { margin: 0; }
+  .logo img { width: 64px; height: 64px; filter: drop-shadow(0 1px 1px var(--shadow-contact)); }
+  .logo svg { width: 64px; height: 64px; filter: drop-shadow(0 1px 1px var(--shadow-contact)); }
+  h2 { margin: 0; font-size: 20px; font-weight: 600; }
+  .sub { margin: 0; color: var(--ink-2); font-size: 13px; }
+  .about { margin: 0; font-size: 15px; }
 
   /* Feature pills: raised, control radius, 8 dp side padding. */
   .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
   .pills li {
-    height: 28px;
-    padding: 0 8px;
+    height: 32px;
+    padding: 0 10px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -239,11 +243,13 @@
     background: var(--elevated);
     border: 1px solid var(--hairline);
     box-shadow: 0 1px 1px var(--shadow-contact), 0 2px 6px var(--shadow-ambient), inset 0 1px 0 var(--top-highlight);
-    font-size: 12px;
+    font-size: 13px;
   }
-  .pills .i { width: 14px; height: 14px; color: var(--ink-2); }
+  .pills .i { width: 16px; height: 16px; color: var(--ink-2); }
 
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+  .actions .btn { height: 40px; padding: 0 16px; font-size: 15px; }
+  .actions .btn .i { width: 18px; height: 18px; }
 </style>
 </head>
 <body>
