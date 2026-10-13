@@ -131,7 +131,8 @@
     background: var(--structure);
     border-bottom: 1px solid var(--hairline);
   }
-  .brand { font-weight: 600; font-size: 14px; }
+  .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+  .brand img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--hairline); }
 
   /* Buttons: elevated with a hairline, radius 10, 32 tall; primary is solid accent. */
   .btn {
@@ -251,7 +252,7 @@
 </svg>
 
 <header class="strip">
-  <span class="brand">BobGrease</span>
+  <a class="brand" href="https://github.com/greasebob"><img src="avatar.svg" alt="" width="28" height="28">BobGrease</a>
   <a class="btn icon" href="https://github.com/greasebob" aria-label="GitHub" title="GitHub"><svg class="i"><use href="#github"/></svg></a>
 </header>
 

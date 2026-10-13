@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2E333A"/>
+      <stop offset="1" stop-color="#191C21"/>
+    </linearGradient>
+    <linearGradient id="head" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D9DCE1"/>
+      <stop offset="0.3" stop-color="#FFFFFF"/>
+      <stop offset="0.7" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#D9DCE1"/>
+    </linearGradient>
+    <linearGradient id="visor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6DB6F0"/>
+      <stop offset="1" stop-color="#2F8EDB"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" fill="url(#bg)"/>
+  <!-- head: Roblox's rounded cylinder -->
+  <rect x="30" y="30" width="68" height="76" rx="24" fill="url(#head)"/>
+  <!-- visor band and brim -->
+  <path d="M30 52 V46 Q30 30 50 30 H78 Q98 30 98 46 V52 Z" fill="url(#visor)"/>
+  <rect x="40" y="36" width="48" height="9" rx="4.5" fill="#FFFFFF" opacity="0.9"/>
+  <path d="M24 50 Q64 44 104 50 Q104 58 96 58 Q64 53 32 58 Q24 58 24 50 Z" fill="#1F78C4"/>
+  <!-- shades -->
+  <path d="M34 64 H60 Q61 64 61 66 V70 Q61 79 52 79 H42 Q34 79 34 71 Z" fill="#111317"/>
+  <path d="M94 64 H68 Q67 64 67 66 V70 Q67 79 76 79 H86 Q94 79 94 71 Z" fill="#111317"/>
+  <rect x="58" y="64" width="12" height="4" rx="2" fill="#111317"/>
+  <path d="M39 68 L47 68" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M72 68 L80 68" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- smile -->
+  <path d="M51 88 Q64 98 77 88" fill="none" stroke="#111317" stroke-width="3.5" stroke-linecap="round"/>
+</svg>
