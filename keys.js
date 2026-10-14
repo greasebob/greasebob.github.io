@@ -157,11 +157,13 @@
     if (!autoAt || now - (autoAt + song[at][0] * 1000) > 250) autoAt = now - song[at][0] * 1000;
     while (song && now >= autoAt + song[at][0] * 1000) {
       const notes = playStep();
-      if (at === 0) { // the end: the next song, from its start
-        releaseAll(400);
+      if (at === 0) { // the end: the last notes ring their written length, then the next song from its start
+        const last = song[song.length - 1][0];
+        const ring = Math.max(0, ...held.map(h => h.end - last));
+        held = []; // their fades are set, and the next song's times start afresh
         autoAt = 0;
         if (next) next.then(s => { if (s) begin(s); }); // fetched while this one played
-        autoTimer = setTimeout(autoTick, 1200);
+        autoTimer = setTimeout(autoTick, ring * 1000 + 800);
         return;
       }
     }
