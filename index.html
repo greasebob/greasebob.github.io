@@ -208,8 +208,19 @@
   /* A halo of the page colour keeps the heading readable over a passing key. */
   h1, .lede { width: fit-content; text-shadow: 0 0 3px var(--canvas), 0 0 6px var(--canvas), 0 0 10px var(--canvas); }
 
+  /* QuartzMIDI takes the full width; P2Piano sits under it, smaller. */
   .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-  @media (min-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .card.small { gap: 16px; padding: 20px 24px; }
+  .card.small .logo, .card.small .logo svg { width: 48px; height: 48px; }
+  .card.small h2 { font-size: 17px; }
+  .card.small .about { font-size: 14px; }
+  .card.small .pills { display: none; }
+  @media (min-width: 760px) {
+    .card.small { flex-direction: row; align-items: center; }
+    .card.small .head { flex: none; }
+    .card.small .about { flex: 1; }
+    .card.small .actions { margin-top: 0; }
+  }
 
   /* Cards: card fill, hairline, radius 12, a deep shadow that lifts them off the keys, top highlight. */
   .card {
@@ -238,6 +249,8 @@
   h2 { margin: 0; font-size: 20px; font-weight: 600; }
   .sub { margin: 0; color: var(--ink-2); font-size: 13px; }
   .about { margin: 0; font-size: 15px; }
+  .about p { margin: 0 0 6px; }
+  .about p:last-child { margin: 0; }
 
   /* Feature pills: raised, control radius, 8 dp side padding. */
   .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
@@ -296,19 +309,23 @@
 </header>
 
 <main>
-  <h1>MIDI Tools for Roblox and Piano</h1>
-  <p class="lede">Free and open source.</p>
+  <h1>QuartzMIDI</h1>
+  <p class="lede">A MIDI app for Roblox pianos. Free and open source.</p>
 
   <div class="grid">
-    <section class="card" id="quartzmidi" aria-labelledby="q-name">
+    <section class="card main" id="quartzmidi" aria-labelledby="q-name">
       <div class="head">
         <div class="logo app"><img src="quartzmidi.png" alt="" width="48" height="48"></div>
         <div>
-          <h2 id="q-name">QuartzMIDI</h2>
+          <h2 id="q-name">Play any Roblox piano from your MIDI keyboard</h2>
           <p class="sub">Windows 10 and 11</p>
         </div>
       </div>
-      <p class="about">A MIDI app for Roblox pianos that plays your MIDI keyboard on any game piano, with a sheet editor, audio to MIDI and a song library.</p>
+      <div class="about">
+        <p>Plug in a MIDI keyboard and play the piano in any Roblox game, with velocity, sustain and all 88 keys.</p>
+        <p>Play MIDI files on 61 or 88 keys, turn a song into a sheet to copy into the game, or turn a recording into MIDI.</p>
+        <p>Keep your songs in a library with folders, search, favourites, playlists and a queue, and control it with hotkeys from inside the game.</p>
+      </div>
       <ul class="pills">
         <li><svg class="i"><use href="#keyboard-music"/></svg>MIDI keyboard</li>
         <li><svg class="i"><use href="#file-music"/></svg>Sheet editor</li>
@@ -323,7 +340,7 @@
       </div>
     </section>
 
-    <section class="card" id="p2piano" aria-labelledby="p-name">
+    <section class="card small" id="p2piano" aria-labelledby="p-name">
       <div class="head">
         <div class="logo app"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="p2g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6C662"/><stop offset="1" stop-color="#D8902A"/></linearGradient></defs><rect width="48" height="48" rx="9" fill="url(#p2g)"/><rect x="9" y="11" width="30" height="26" rx="3.5" fill="#FFFFFF"/><path d="M19 11v26M29 11v26" stroke="#D8902A" stroke-width="1.5"/><rect x="16" y="11" width="6" height="15" rx="1.5" fill="#2A2118"/><rect x="26" y="11" width="6" height="15" rx="1.5" fill="#2A2118"/></svg></div>
         <div>
