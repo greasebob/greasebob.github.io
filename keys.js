@@ -109,23 +109,24 @@
 
   // Plays the step at `at` and moves on, back to 0 at the song's end; returns the step's notes. Played by
   // hand, a note rings until a later step passes its written end, as Tap's do; played by Play, it ends there.
-  let held = []; // the song's notes sounding: { end (song time), v (voice, if heard), e (lit) }
+  // A key stays lit while it is held down, not while the pedal rings it on.
+  let held = []; // the song's notes sounding: { end, up (song time the key is let up), v (voice, if heard), e (lit) }
   function playStep() {
     const [time, notes] = song[at];
     held = held.filter(h => {
+      if (h.up <= time + 0.001) unlight(h.e);
       if (h.end > time + 0.001) return true;
       if (h.v) stop(h.v, ac.currentTime);
-      unlight(h.e);
       return false;
     });
-    for (const [note, vel, len] of notes) {
+    for (const [note, vel, len, key = len] of notes) {
       const v = play(note, vel);
       if (v && auto) {
         const t = ac.currentTime + len;
         v.g.gain.setTargetAtTime(0, t, 0.08);
         v.src.stop(t + 0.6);
       }
-      held.push({ end: time + len, v, e: light(note, auto ? len * 1000 : 3000) });
+      held.push({ end: time + len, up: time + key, v, e: light(note, auto ? key * 1000 : 3000) });
     }
     at = (at + 1) % song.length;
     return notes;
