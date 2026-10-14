@@ -29,7 +29,7 @@
       // light waits out its delay. No compressor, so soft and loud stay apart; a pedalled chord can sum past
       // full scale, so a limiter touches only those peaks, where it would clip.
       ac = new AudioContext({ latencyHint: 'balanced' });
-      ac.onstatechange = showSound;
+      ac.onstatechange = () => { showSound(); unpack(); };
       const limit = ac.createDynamicsCompressor();
       limit.threshold.value = -3;
       limit.knee.value = 0;
@@ -39,16 +39,27 @@
       out = ac.createGain();
       out.gain.value = 1.2;
       out.connect(limit).connect(ac.destination);
-      // the middle layer first, so a note sounds soon; the others follow one after another
-      (async () => {
-        for (const i of [1, 2, 0, 3]) {
-          await Promise.all(ROOTS.map(n => fetch(`notes/${LAYERS[i].name}/${n}.mp3`).then(r => r.arrayBuffer())
-            .then(b => ac.decodeAudioData(b)).then(buf => buffers.set(`${i}:${n}`, buf)).catch(() => {})));
-        }
-      })();
+      // The samples download at once, behind the page's own files, and are unpacked only once the page may
+      // sound (in 40 ms or so), as unpacked they take about 180 MB: a visit that never sounds keeps none.
+      for (const i of LOAD_ORDER) for (const n of ROOTS)
+        packed.set(`${i}:${n}`, fetch(`notes/${LAYERS[i].name}/${n}.mp3`, { priority: 'low' }).then(r => r.arrayBuffer()).catch(() => null));
     }
     if (ac.state !== 'running') ac.resume().then(showSound, () => {});
     showSound();
+    unpack();
+  }
+  const LOAD_ORDER = [1, 2, 0, 3]; // the middle layer first, so a note sounds soon; the others one after another
+  const packed = new Map();
+  let unpacking = false;
+  function unpack() {
+    if (unpacking || !ac || ac.state !== 'running') return;
+    unpacking = true;
+    (async () => {
+      for (const i of LOAD_ORDER) {
+        await Promise.all(ROOTS.map(n => packed.get(`${i}:${n}`).then(b => b && ac.decodeAudioData(b))
+          .then(buf => { if (buf) buffers.set(`${i}:${n}`, buf); packed.delete(`${i}:${n}`); }).catch(() => {})));
+      }
+    })();
   }
   const heard = () => !muted && ac && ac.state === 'running';
 
@@ -61,7 +72,7 @@
     soundBtn.classList.toggle('wake', waiting);
   }
 
-  // A song: [[time_s, [[note, velocity, length_s], ...]], ...], one step per chord. One is picked at random
+  // A song: [[time_s, [[note, velocity, length_s, key_s?], ...]], ...], one step per chord. One is picked at random
   // from songs/index.json, and the next is fetched while it plays, to follow it when it ends.
   let list = [], song = null, next = null, at = 0, prev = -1;
   function pick() {
@@ -96,7 +107,7 @@
   }
 
   // The keys lit: each note sounding, from when it is heard (the sound card's delay after the call) to its end.
-  const lit = [];
+  const lit = [], sounding = new Set(); // sounding: the notes heard now, kept from frame to frame
   const delay = () => (heard() ? ((ac.outputLatency || 0) + (ac.baseLatency || 0)) * 1000 : 0);
   function light(note, ms) {
     const on = performance.now() + delay();
@@ -158,13 +169,12 @@
     if (!autoAt || now - (autoAt + song[at][0] * 1000) > 250) autoAt = now - song[at][0] * 1000;
     while (song && now >= autoAt + song[at][0] * 1000) {
       const notes = playStep();
-      if (at === 0) { // the end: the last notes ring their written length, then the next song from its start
-        const last = song[song.length - 1][0];
-        const ring = Math.max(0, ...held.map(h => h.end - last));
+      if (at === 0) { // the end: the finale, the last notes ringing their written length, then the next song
+        const ring = celebrate(notes);
         held = []; // their fades are set, and the next song's times start afresh
         autoAt = 0;
         if (next) next.then(s => { if (s) begin(s); }); // fetched while this one played
-        autoTimer = setTimeout(autoTick, ring * 1000 + 800);
+        autoTimer = setTimeout(autoTick, Math.max(ring, 1900) + 800);
         return;
       }
     }
@@ -181,22 +191,24 @@
     autoTick();
   });
 
-  // The finale: the last chord rings and runs up the keyboard, the keys burst away from the cursor in every
-  // colour, and notes fly out like confetti. Keys touched while it lasts stay quiet.
+  // The finale, played by hand or by Play: the last chord rings its written length and runs up the keyboard,
+  // the keys burst away from the cursor in every colour, and notes fly out like confetti. Keys touched while
+  // it lasts stay quiet. Returns how long the last chord rings, ms.
   let quiet = 0, party = 0;
   const confetti = [];
   function celebrate(chord) {
     const now = performance.now();
+    const ring = Math.max(0, ...chord.map(([, , len]) => len * 1000));
     quiet = now + 1900;
     party = 1;
-    setTimeout(() => releaseAll(), 1800);
+    setTimeout(() => releaseAll(), Math.max(1800, ring));
     const pcs = [...new Set(chord.map(([n]) => n % 12))];
     const low = Math.min(...chord.map(([n]) => n));
     const run = [];
     for (let n = low; n <= 108 && run.length < 14; n++) if (pcs.includes(n % 12)) run.push(n);
     run.forEach((n, i) => setTimeout(() => { play(n, Math.round(50 + 50 * i / run.length)); light(n, 1550 - i * 55); }, 250 + i * 55));
     const cx = cursor.on ? cursor.x : W / 2, cy = cursor.on ? cursor.y : H / 2;
-    if (still.matches) return;
+    if (still.matches) return ring;
     for (const k of keys) {
       const dx = k.x - cx, dy = k.y - cy, d = Math.hypot(dx, dy) || 1;
       const push = 2200 * Math.exp(-d / 500);
@@ -211,6 +223,7 @@
         hue: Math.random() * 360, size: 12 + Math.random() * 12, glyph: '♪♫♩♬'[i % 4], life: 0, end: 1.8 + Math.random() * 1.2,
       });
     }
+    return ring;
   }
 
   // Plays a note at a MIDI velocity: the layer recorded at that strength (or the nearest yet loaded), so a soft
@@ -284,6 +297,18 @@
     k.h = (black ? 100 : 150) * s;
     k.m = (k.w * k.h) / 4500;
     k.I = (k.m * (k.w * k.w + k.h * k.h)) / 12;
+    k.reach = Math.hypot(k.w, k.h) / 2 + REACH; // past this from its centre, the cursor cannot touch it
+    // its outlines, made once and drawn each frame about its centre
+    const x = -k.w / 2, y = -k.h / 2, r = 4 * s;
+    k.body = new Path2D();
+    k.body.roundRect(x, y, k.w, k.h, r);
+    k.drop = new Path2D();
+    k.drop.roundRect(x + 1, y + 3 * s, k.w, k.h, r);
+    k.face = null;
+    if (black) { // the black key's top face, shorter at the front
+      k.face = new Path2D();
+      k.face.roundRect(x + 2.5 * s, y + 2 * s, k.w - 5 * s, k.h - 12 * s, r * 0.6);
+    }
     k.x = Math.random() * W;
     k.y = above ? -k.h - Math.random() * 200 : Math.random() * (H + k.h) - k.h / 2;
     k.fall = (180 + Math.random() * 120) * s; // a waterfall
@@ -298,8 +323,9 @@
     return k;
   }
 
+  let dpr = 1;
   function resize() {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    dpr = Math.min(devicePixelRatio || 1, 2);
     W = innerWidth;
     H = innerHeight;
     canvas.width = Math.round(W * dpr);
@@ -352,7 +378,9 @@
     const relax = 1 - Math.exp(-dt * 2);
     const nowMs = performance.now();
     for (let i = lit.length - 1; i >= 0; i--) if (lit[i].off <= nowMs) lit.splice(i, 1);
-    const sounding = new Set(lit.filter(e => e.on <= nowMs).map(e => e.note));
+    sounding.clear();
+    for (const e of lit) if (e.on <= nowMs) sounding.add(e.note);
+    const sx = cursor.x - cursor.px, sy = cursor.y - cursor.py, s2 = sx * sx + sy * sy;
     for (const k of keys) {
       if (!still.matches) {
         k.x += k.vx * dt;
@@ -365,9 +393,12 @@
         if (v > 2500) { k.vx *= 2500 / v; k.vy *= 2500 / v; }
         k.va = Math.max(-12, Math.min(12, k.va));
       }
-      // The cursor's path this frame, in short steps, so a quick swipe cannot pass through a key.
+      // The cursor's path this frame, in short steps, so a quick swipe cannot pass through a key; a key the
+      // path passes nowhere near is left out.
       let hit = -1;
-      for (let i = 1; i <= steps; i++) {
+      const u = s2 ? Math.max(0, Math.min(1, ((k.x - cursor.px) * sx + (k.y - cursor.py) * sy) / s2)) : 0;
+      const nx = cursor.px + sx * u - k.x, ny = cursor.py + sy * u - k.y;
+      if (nx * nx + ny * ny < k.reach * k.reach) for (let i = 1; i <= steps; i++) {
         const t = i / steps;
         hit = Math.max(hit, contact(k, cursor.px + (cursor.x - cursor.px) * t, cursor.py + (cursor.y - cursor.py) * t));
       }
@@ -396,77 +427,70 @@
     }
   }
 
+  // Each key and note is placed by setting the transform outright (no save and restore), and its label is
+  // drawn in one font scaled to its size, so no font is parsed per key.
+  const LABEL = '500 11px "IBM Plex Sans", system-ui, sans-serif', NOTE = '600 24px system-ui, sans-serif';
   function draw() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     keys.sort((a, b) => a.s - b.s); // a key respawns at a new depth
+    const now = performance.now();
+    // white keys light blue and black keys violet at first, both drifting round the colour wheel once in 5 minutes
+    const shift = (now / 1000) * 1.2;
+    const litWhite = dark.matches ? `hsl(${207 + shift}, 79%, 61%)` : `hsl(${208 + shift}, 89%, 41%)`;
+    const litBlack = dark.matches ? `hsl(${258 + shift}, 80%, 75%)` : `hsl(${259 + shift}, 63%, 57%)`;
+    ctx.lineWidth = 1;
+    ctx.font = LABEL;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
     for (const k of keys) {
-      const w = k.w, h = k.h, x = -w / 2, y = -h / 2, r = 4 * k.s;
-      ctx.save();
-      ctx.translate(k.x, k.y);
-      ctx.rotate(k.a);
-      ctx.globalAlpha = 0.6 + (k.s - 0.6); // farther keys sink into the page
+      const c = Math.cos(k.a) * dpr, s = Math.sin(k.a) * dpr;
+      ctx.setTransform(c, s, -s, c, k.x * dpr, k.y * dpr);
+      const a = 0.6 + (k.s - 0.6); // farther keys sink into the page
+      ctx.globalAlpha = a;
       ctx.fillStyle = colors.shadow;
-      ctx.beginPath();
-      ctx.roundRect(x + 1, y + 3 * k.s, w, h, r);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.roundRect(x, y, w, h, r);
+      ctx.fill(k.drop);
       ctx.fillStyle = k.black ? colors.black : colors.white;
-      ctx.fill();
-      ctx.lineWidth = 1;
+      ctx.fill(k.body);
       ctx.strokeStyle = k.black ? colors['black-edge'] : colors['white-edge'];
-      ctx.stroke();
-      if (k.black) { // the black key's top face, shorter at the front
-        ctx.beginPath();
-        ctx.roundRect(x + 2.5 * k.s, y + 2 * k.s, w - 5 * k.s, h - 12 * k.s, r * 0.6);
+      ctx.stroke(k.body);
+      if (k.face) {
         ctx.fillStyle = colors['black-face'];
-        ctx.fill();
+        ctx.fill(k.face);
       }
       if (k.flash > 0) { // lit: nearly solid accent with a glow, even on a far key
-        const a = ctx.globalAlpha;
+        const lit = k.black ? litBlack : litWhite;
         ctx.globalAlpha = Math.min(1, a + 0.4) * k.flash * 0.9;
-        // white keys light blue and black keys violet at first, both drifting round the colour wheel once in 5 minutes
-        const shift = (performance.now() / 1000) * 1.2;
-        const lit = dark.matches
-          ? (k.black ? `hsl(${258 + shift}, 80%, 75%)` : `hsl(${207 + shift}, 79%, 61%)`)
-          : (k.black ? `hsl(${259 + shift}, 63%, 57%)` : `hsl(${208 + shift}, 89%, 41%)`);
         ctx.shadowColor = lit;
         ctx.shadowBlur = 22 * k.flash;
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, h, r);
         ctx.fillStyle = lit;
-        ctx.fill();
+        ctx.fill(k.body);
         ctx.shadowBlur = 0;
         ctx.globalAlpha = a;
       }
       if (party > 0) { // the finale's colours, running across the screen
-        const a = ctx.globalAlpha;
         ctx.globalAlpha = a * Math.min(1, party * 1.5) * 0.6;
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, h, r);
-        ctx.fillStyle = `hsl(${(k.x / W * 360 + performance.now() / 4) % 360}, 85%, 60%)`;
-        ctx.fill();
+        ctx.fillStyle = `hsl(${(k.x / W * 360 + now / 4) % 360}, 85%, 60%)`;
+        ctx.fill(k.body);
         ctx.globalAlpha = a;
       }
       ctx.fillStyle = k.flash > 0.5 ? (k.black ? colors['black-lit-ink'] : colors['on-accent']) : k.black ? colors['black-label'] : colors['white-label'];
-      ctx.font = `500 ${((k.black ? 9 : 11) * k.s).toFixed(1)}px "IBM Plex Sans", system-ui, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText(k.name, 0, h / 2 - (k.black ? 16 : 10) * k.s);
-      ctx.restore();
+      const z = (k.black ? 9 / 11 : 1) * k.s;
+      ctx.transform(z, 0, 0, z, 0, 0);
+      ctx.fillText(k.name, 0, (k.h / 2 - (k.black ? 16 : 10) * k.s) / z);
     }
-    ctx.textAlign = 'center';
+    ctx.font = NOTE;
     ctx.textBaseline = 'middle';
-    for (const c of confetti) {
-      ctx.save();
-      ctx.translate(c.x, c.y);
-      ctx.rotate(c.a);
-      ctx.globalAlpha = Math.min(1, (c.end - c.life) / 0.6);
-      ctx.fillStyle = `hsl(${c.hue}, 85%, ${dark.matches ? 65 : 50}%)`;
-      ctx.font = `600 ${c.size.toFixed(0)}px system-ui, sans-serif`;
-      ctx.fillText(c.glyph, 0, 0);
-      ctx.restore();
+    const light = dark.matches ? 65 : 50;
+    for (const n of confetti) {
+      const z = n.size / 24, c = Math.cos(n.a) * dpr * z, s = Math.sin(n.a) * dpr * z;
+      ctx.setTransform(c, s, -s, c, n.x * dpr, n.y * dpr);
+      ctx.globalAlpha = Math.min(1, (n.end - n.life) / 0.6);
+      ctx.fillStyle = `hsl(${n.hue}, 85%, ${light}%)`;
+      ctx.fillText(n.glyph, 0, 0);
     }
-    ctx.textBaseline = 'alphabetic';
+    ctx.globalAlpha = 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   function frame(t) {
