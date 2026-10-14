@@ -46,13 +46,13 @@ DROP = [
     r'twinkle', r'mary had a little lamb', r'happy birthday', r'jingle bells', r'meme medley', r'lihat kebunku', r'^rush e',
     r'^(first midi i made|lol|how|woo|midi export|minus one|medley|damned bo2)$',
 ]
-# One piece played straight in several files: only the fullest (the most notes) is kept. Arrangements by
-# different arrangers (Howl's Moving Castle, Mia & Sebastian, Unravel) are different music and all stay.
+# One piece played from the same notes in several files: only the fullest (the most notes) is kept. Different
+# arrangements (Howl's Moving Castle, Mia & Sebastian, Unravel, Vogel im Kafig, Schindler's List and more, whose
+# files differ in length and opening) are different music and all stay.
 REPEATS = [
     r'hungarian[ -]rhapsody|friska', r'^(?!.*(jazz|winter wind)).*campanella', r'liebestra',
     r'ballade ?\.?no\.? ?1(?!\d)', r'ballade ?\.?no\.? ?3', r'25 no\.? ?6', r'nocturne in c sharp minor',
-    r'prelude.?in.?e.?minor', r'batman', r'light of the seven', r'vogel im kafig', r'once upon a december',
-    r'schindler', r'sadness and sorrow', r'la morocha', r'indila', r'dearly beloved', r'tango piano by sangah',
+    r'prelude.?in.?e.?minor', r'batman', r'light of the seven', r'la morocha',
 ]
 
 
